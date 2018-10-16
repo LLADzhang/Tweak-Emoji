@@ -1,5 +1,5 @@
 # Can you mock emoji?
-We want to creat a game that makes use of the power of emotion detection. The game is based on different levels. The goal of user is to pass as many levels as possible. In each level, user will try to mimic an emoji popup on the screen before timeout. The camera continuously captures user's face and dectects if the facial expression corresponds to the emoji. User is rewarded by points if he correctly minics the emoji in time.
+We want to develop a game that makes use of the power of emotion detection. The game is based on different levels. The goal of user is to pass as many levels as possible. In each level, user will try to mimic an emoji popup on the screen before timeout. The camera continuously captures user's face and dectects if the facial expression corresponds to the emoji. User is rewarded by points if he correctly minics the emoji in time.
 
 ## Team members
 Heng Zhang, Yajie Geng
@@ -8,7 +8,7 @@ Heng Zhang, Yajie Geng
 * Use existing available deep neural network architectures to perform facial detection.
 * Propose a new architecture that would perform better.
 * Analyze accuracy vs speed of detection and optimize the network for real time detection.
-* Create a game interface for playing.
+* Develop a game interface for playing.
 
 ## Challenges
 * For a game, the accuracy of facial detection is important. Because if the user correctly imitates the emoji but the CNN fails to detect it, that will gives wrong feedback to the user and the game experience is negatively affected.
