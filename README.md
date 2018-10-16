@@ -15,9 +15,9 @@ Heng Zhang, Yajie Geng
 * The game interface should be clear and simple and easy to learn
 
 ## References
-[some APIs](https://nordicapis.com/20-emotion-recognition-apis-that-will-leave-you-impressed-and-concerned/)
-[emotion dection](https://www.kaggle.com/c/emotion-detection-from-facial-expressions)
-[dataset1](http://vis-www.cs.umass.edu/lfw/#download)
-[dataset2](http://www.kasrl.org/jaffe.html)
-[dataset3](http://cvit.iiit.ac.in/projects/IMFDB/)
-[dataset4](http://vision.ucsd.edu/~iskwak/ExtYaleDatabase/ExtYaleB.html)
+* [some APIs](https://nordicapis.com/20-emotion-recognition-apis-that-will-leave-you-impressed-and-concerned/)
+* [emotion dection](https://www.kaggle.com/c/emotion-detection-from-facial-expressions)
+* [dataset1](http://vis-www.cs.umass.edu/lfw/#download)
+* [dataset2](http://www.kasrl.org/jaffe.html)
+* [dataset3](http://cvit.iiit.ac.in/projects/IMFDB/)
+* [dataset4](http://vision.ucsd.edu/~iskwak/ExtYaleDatabase/ExtYaleB.html)
