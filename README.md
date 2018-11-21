@@ -22,3 +22,4 @@ We want to develop a game that makes use of the power of facial expression detec
 * [dataset2](http://www.kasrl.org/jaffe.html)
 * [dataset3](http://cvit.iiit.ac.in/projects/IMFDB/)
 * [dataset4](http://vision.ucsd.edu/~iskwak/ExtYaleDatabase/ExtYaleB.html)
+* [Existing proj1](https://github.com/LLADzhang/bme595_project.git)
