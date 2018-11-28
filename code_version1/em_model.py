@@ -31,7 +31,7 @@ class EmNet(nn.Module):
         x = F.relu(self.conv2(x))
         x = self.pool(x)
         x = F.relu(self.conv3(x))
-        print(x.size())
+        # print(x.size())
         x = x.view(x.size(0), 128 * 49 * 49)
         x = self.dropout(x)
         x = F.relu(self.fc1(x))
@@ -48,7 +48,7 @@ class EmModel:
 
         # Initialize training parameters
         self.epochs = 50
-        self.batch_size = 50
+        self.batch_size = 1
         self.learn_rate = 0.01
         self.loss_function = nn.CrossEntropyLoss()
         self.optimizer = torch.optim.Adam(self.net.parameters(), lr=self.learn_rate)
@@ -66,7 +66,7 @@ class EmModel:
                 normalize,
         ]))
         
-        self.train_loader = torch.utils.data.DataLoader(train_dataset, batch_size = self.batch_size, shuffle=True, num_workers = 5)
+        self.train_loader = torch.utils.data.DataLoader(train_dataset, batch_size = self.batch_size, shuffle=True, num_workers = 1)
         print(train_dataset.classes)
 
         for i, data in enumerate(self.train_loader, 0):
@@ -138,8 +138,10 @@ class EmModel:
             total = self.batch_size * len(self.train_loader)
             correct = 0
             for i, data in enumerate(self.train_loader, 0):
-                inputs, labels = datd
-                pred = predict(inputs)
+                inputs, labels = data
+                labels = labels.type(torch.FloatTensor)
+                pred = self.predict(inputs)
+                pred = pred.type(torch.FloatTensor)
                 check = torch.eq(pred, labels)
                 check.double()
                 correct += torch.sum(check).item()
@@ -176,7 +178,7 @@ class EmModel:
             better = False
             if (acc > self.best_acc):
                 self.best_acc = acc
-                better = True
+                better = Tr/ue
 
             print('Accuracy:', acc)
             self.acc_list.append(acc)
