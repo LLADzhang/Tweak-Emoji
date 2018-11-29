@@ -4,7 +4,10 @@ import torch.nn.functional as F
 from torchvision import datasets, transforms
 import torchvision.models as models
 import argparse
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
+plt.ioff()
 import os
 import time
 import shutil
