@@ -29,7 +29,7 @@ class EmNet(nn.Module):
 
         self.classifier = nn.Sequential(
             nn.Dropout(),
-            nn.Linear(128 * 28 * 28, 3072),
+            nn.Linear(128 * 2 * 2, 3072),
             nn.ReLU(inplace=True),
             nn.Linear(3072, len(classes)),
         )
@@ -37,13 +37,13 @@ class EmNet(nn.Module):
     # Forward process
     # x is a 48x48 2d gray scale image
     def forward(self, y):
-        print(y)
+        # print(y)
         x = torch.tensor(y)
         x = self.features(x)
-        print(x.size())
-        x = x.view(x.size(0), 128 * 28 * 28)
+        # print(x.size())
+        x = x.view(x.size(0), 128 * 2 * 2)
         x = self.classifier(x)
-        print(x)
+        # print(x)
         return x
 
 class EmModel:
@@ -56,8 +56,8 @@ class EmModel:
 
         # Initialize training parameters
         self.epochs = 50
-        self.batch_size = 50
-        self.learn_rate = 0.1
+        self.batch_size = 1
+        self.learn_rate = 0.0001
         self.loss_function = nn.CrossEntropyLoss()
         self.optimizer = torch.optim.Adam(self.net.classifier.parameters(), lr=self.learn_rate)
 
@@ -69,7 +69,6 @@ class EmModel:
             trainDir,
             transforms.Compose([
                 transforms.Grayscale(),
-                transforms.CenterCrop((100, 100)),
                 transforms.ToTensor(),
                 normalize,
         ]))
@@ -163,7 +162,6 @@ class EmModel:
             print('Training epoch:', epoch)
             running_loss = 0.0
             for i, data in enumerate(self.train_loader, 0):
-                print(self.net.parameters())
                 # get the inputs
                 inputs, labels = data
                 # print(labels)
@@ -206,5 +204,5 @@ class EmModel:
 
         print('Training ends:', time.ctime(time.time()))
 
-model = EmModel('../data', 'model')
+model = EmModel('../face_data', 'model')
 model.train()
