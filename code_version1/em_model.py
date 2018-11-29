@@ -86,7 +86,7 @@ class EmModel:
             self.optimizer.load_state_dict(copy['optimizer'])
             self.loss_list = copy['loss_list']
             self.acc_list = copy['acc_list']
-            plt.plot(list(range(1, len(self.loss_list)+1)), np.flip(self.loss_list), label='EmNet')
+            plt.plot(list(range(1, len(self.loss_list)+1)), self.loss_list, label='EmNet')
             plt.legend()
             plt.title('Training Error vs Epoch')
             plt.xlabel('Epoch')
