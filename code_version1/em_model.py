@@ -15,27 +15,35 @@ class EmNet(nn.Module):
     # classes: list of target classes
     def __init__(self, classes):
         super(EmNet, self).__init__()
-        self.conv1 = nn.Conv2d(3, 64, 5)
-        self.conv2 = nn.Conv2d(64, 64, 5)
-        self.conv3 = nn.Conv2d(64, 128, 4)
-        self.pool = nn.MaxPool2d(3, 2)
-        self.dropout = nn.Dropout(0.3)
-        self.fc1 = nn.Linear(128 * 49 * 49, 3072)
-        self.fc2 = nn.Linear(3072, len(classes))
+        self.features = nn.Sequential(
+            nn.Conv2d(1, 64, kernel_size=5),
+            nn.ReLU(inplace=True),
+            nn.MaxPool2d(kernel_size=3, stride=2),
+            nn.Conv2d(64, 64, kernel_size=5),
+            nn.ReLU(inplace=True),
+            nn.MaxPool2d(kernel_size=3, stride=2),
+            nn.Conv2d(64, 128, kernel_size=4),
+            nn.ReLU(inplace=True),
+            nn.MaxPool2d(kernel_size=3, stride=2),
+        )
+
+        self.classifier = nn.Sequential(
+            nn.Dropout(),
+            nn.Linear(128 * 28 * 28, 3072),
+            nn.ReLU(inplace=True),
+            nn.Linear(3072, len(classes)),
+        )
 
     # Forward process
     # x is a 48x48 2d gray scale image
-    def forward(self, x):
-        x = F.relu(self.conv1(x))
-        x = self.pool(x)
-        x = F.relu(self.conv2(x))
-        x = self.pool(x)
-        x = F.relu(self.conv3(x))
-        # print(x.size())
-        x = x.view(x.size(0), 128 * 49 * 49)
-        x = self.dropout(x)
-        x = F.relu(self.fc1(x))
-        x = F.softmax(self.fc2(x), dim = 1)
+    def forward(self, y):
+        print(y)
+        x = torch.tensor(y)
+        x = self.features(x)
+        print(x.size())
+        x = x.view(x.size(0), 128 * 28 * 28)
+        x = self.classifier(x)
+        print(x)
         return x
 
 class EmModel:
@@ -48,32 +56,26 @@ class EmModel:
 
         # Initialize training parameters
         self.epochs = 50
-        self.batch_size = 1
-        self.learn_rate = 0.01
+        self.batch_size = 50
+        self.learn_rate = 0.1
         self.loss_function = nn.CrossEntropyLoss()
-        self.optimizer = torch.optim.Adam(self.net.parameters(), lr=self.learn_rate)
+        self.optimizer = torch.optim.Adam(self.net.classifier.parameters(), lr=self.learn_rate)
 
         # Load data set
         trainDir = os.path.join(dataDir, 'train')
 
-        normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+        normalize = transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
         train_dataset = datasets.ImageFolder(
             trainDir,
             transforms.Compose([
-                transforms.RandomResizedCrop(224),
-                transforms.RandomHorizontalFlip(),
+                transforms.Grayscale(),
+                transforms.CenterCrop((100, 100)),
                 transforms.ToTensor(),
                 normalize,
         ]))
         
-        self.train_loader = torch.utils.data.DataLoader(train_dataset, batch_size = self.batch_size, shuffle=True, num_workers = 1)
+        self.train_loader = torch.utils.data.DataLoader(train_dataset, batch_size = self.batch_size, shuffle=True, num_workers = 0)
         print(train_dataset.classes)
-
-        for i, data in enumerate(self.train_loader, 0):
-            # get the inputs
-            inputs, labels = data
-            print(labels)
-            break
 
         self.check_point_file = os.path.join(modelDir, 'checkpoint.tar')
         if os.path.isfile(self.check_point_file):
@@ -110,7 +112,11 @@ class EmModel:
     # Return the index of predicted class
     def predict(self, inputs):
         outputs = self.net(inputs)
-        label, prob = outputs.max(1)
+        prob, label = torch.max(outputs, 1)
+        '''
+        print('prob', prob)
+        print('label', label)
+        '''
         '''
         # If probability is lower than 0.5
         # Predict it as neutral
@@ -140,8 +146,10 @@ class EmModel:
             for i, data in enumerate(self.train_loader, 0):
                 inputs, labels = data
                 labels = labels.type(torch.FloatTensor)
+                # print(labels)
                 pred = self.predict(inputs)
                 pred = pred.type(torch.FloatTensor)
+                # print(pred)
                 check = torch.eq(pred, labels)
                 check.double()
                 correct += torch.sum(check).item()
@@ -155,6 +163,7 @@ class EmModel:
             print('Training epoch:', epoch)
             running_loss = 0.0
             for i, data in enumerate(self.train_loader, 0):
+                print(self.net.parameters())
                 # get the inputs
                 inputs, labels = data
                 # print(labels)
@@ -178,7 +187,7 @@ class EmModel:
             better = False
             if (acc > self.best_acc):
                 self.best_acc = acc
-                better = Tr/ue
+                better = True
 
             print('Accuracy:', acc)
             self.acc_list.append(acc)
