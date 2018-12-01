@@ -12,6 +12,7 @@ import os
 import time
 import shutil
 import numpy as np
+import sys
 
 class EmNet(nn.Module):
     # Define the network structure
@@ -115,25 +116,47 @@ class EmModel:
     def predict(self, inputs):
         outputs = self.net(inputs)
         prob, label = torch.max(outputs, 1)
-        '''
-        print('prob', prob)
-        print('label', label)
-        '''
-        '''
-        # If probability is lower than 0.5
-        # Predict it as neutral
-        label[prob < 0.5] = 7
-        '''
         return label
 
     # img is a 2d tensor
     # Return the name of predicted class
     def forward(self, img):
         inputs = torch.unsqueeze(img.type(torch.FloatTensor), 0)
-        label = predict(inputs)
-        result = self.classes[self.classes[label[0]]]
+        inputs = torch.unsqueeze(inputs, 0)
+        label = self.predict(inputs)
+        result = self.classes[int(label[0])]
         print('Predict result', result)
-        return result
+        return int(label[0])
+
+
+    def load_model(self):
+        model_file = os.path.join(self.modelDir, 'saved_model.tar')
+        if os.path.isfile(model_file):
+            print('Found saved model:', model_file)
+            copy = torch.load(model_file)
+            self.end = copy['epoch']
+            self.best_acc = copy['best_acc']
+            self.net.load_state_dict(copy['model'])
+            self.optimizer.load_state_dict(copy['optimizer'])
+            self.loss_list = copy['loss_list']
+            self.acc_list = copy['acc_list']
+            plt.plot(list(range(1, len(self.loss_list)+1)), self.loss_list, label='EmNet')
+            plt.legend()
+            plt.title('Training Error vs Epoch')
+            plt.xlabel('Epoch')
+            plt.ylabel('Training Error')
+            plt.savefig('error.png')
+            plt.clf()
+            
+            plt.plot(list(range(1, len(self.acc_list)+1)), self.acc_list, label='EmNet')
+            plt.legend()
+            plt.title('Prediction Accuracy vs Epoch')
+            plt.xlabel('Epoch')
+            plt.ylabel('Accuracy')
+            plt.savefig('accuracy.png')
+            plt.clf()
+        else:
+            print('Model not found')
 
     def train(self):
         def save_model(state, better, f=self.check_point_file):
@@ -207,5 +230,11 @@ class EmModel:
 
         print('Training ends:', time.ctime(time.time()))
 
-model = EmModel('../face_data', 'model')
-model.train()
+if __name__ == '__main__':
+    print("\n------------Emotion Detection Program------------\n")
+    if sys.argv[1] == 'train':
+        model = EmModel('../face_data', 'model')
+        model.train()
+    if sys.argv[1] == 'singleface':
+        import singleface
+        print('In singleface')
