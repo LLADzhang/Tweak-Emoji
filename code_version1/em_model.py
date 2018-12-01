@@ -20,20 +20,20 @@ class EmNet(nn.Module):
     def __init__(self, classes):
         super(EmNet, self).__init__()
         self.features = nn.Sequential(
-            nn.Conv2d(1, 64, kernel_size=5),
+            nn.Conv2d(1, 64, kernel_size=5, padding=2),
             nn.ReLU(inplace=True),
-            nn.MaxPool2d(kernel_size=3, stride=2),
-            nn.Conv2d(64, 64, kernel_size=5),
+            nn.MaxPool2d(kernel_size=3, stride=2, padding=1),
+            nn.Conv2d(64, 64, kernel_size=5, padding=2),
             nn.ReLU(inplace=True),
-            nn.MaxPool2d(kernel_size=3, stride=2),
-            nn.Conv2d(64, 128, kernel_size=4),
+            nn.MaxPool2d(kernel_size=3, stride=2, padding=1),
+            nn.Conv2d(64, 128, kernel_size=4, padding=(2,2)),
             nn.ReLU(inplace=True),
-            nn.MaxPool2d(kernel_size=3, stride=2),
+            # nn.MaxPool2d(kernel_size=3, stride=2),
         )
 
         self.classifier = nn.Sequential(
-            nn.Dropout(),
-            nn.Linear(128 * 2 * 2, 3072),
+            nn.Dropout(0.3),
+            nn.Linear(128 * 13 * 13, 3072),
             nn.ReLU(inplace=True),
             nn.Linear(3072, len(classes)),
         )
@@ -45,7 +45,7 @@ class EmNet(nn.Module):
         x = torch.tensor(y)
         x = self.features(x)
         # print(x.size())
-        x = x.view(x.size(0), 128 * 2 * 2)
+        x = x.view(x.size(0), 128 * 13 * 13)
         x = self.classifier(x)
         # print(x)
         return x
