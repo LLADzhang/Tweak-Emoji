@@ -4,8 +4,8 @@ import os
 import shutil
 
 if __name__ == '__main__':
-    data_dir = '../data/train'
-    face_dir = '../face_data/train'
+    data_dir = '../data/test'
+    face_dir = '../face_data/test'
 
     face_cascade = cv2.CascadeClassifier('../classifier/haarcascade_frontalface_default.xml')
 
